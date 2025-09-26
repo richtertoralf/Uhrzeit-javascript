@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time</title>
+  <style>
+    :root { --bg:#0b0f14; --fg:#e6eef8; --muted:#9bb0c4; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; display: grid; place-items: center;
+      background: transparent; /* oder: background: none; */
+      color: var(--fg);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    .wrap { width: min(900px, 92vw); text-align: center; }
+    /* .headline { font-size: clamp(1rem, 1.2rem + .5vw, 1.25rem); letter-spacing: .02em; color: var(--muted); margin: 0 0 .75rem; } */
+    .clock { background: rgba(0,0,0,.6); } /* oder: #0f172a */
+    .clock { display: inline-block; padding: 1.25rem 1.5rem; border-radius: 1rem; background: rgba(255,255,255,.04); box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.05); }
+    .big { font-variant-numeric: tabular-nums lining-nums; font-size: clamp(2.2rem, 6.4vw, 5rem); line-height: 1.05; letter-spacing: .03em; user-select: none; }
+    .big .sep { opacity: .6; }
+    .blink { animation: pulse 1s steps(2, end) infinite; }
+    @keyframes pulse { to { opacity: .25 } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="headline">Snowgames.Live</p>
+    <section class="clock">
+      <div class="big" aria-label="Aktuelle Zeit">
+        <span id="h">00</span><span class="sep blink">:</span><span id="m">00</span><span class="sep blink">:</span><span id="s">00</span><span class="sep">.</span><span id="ms">000</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const pad = (n, size = 2) => String(n).padStart(size, '0');
+
+    const elH = document.getElementById('h');
+    const elM = document.getElementById('m');
+    const elS = document.getElementById('s');
+    const elMs = document.getElementById('ms');
+
+    let baseDate = Date.now();
+    let basePerf = performance.now();
+
+    function tick() {
+      const nowPerf = performance.now();
+      const d = new Date(baseDate + (nowPerf - basePerf));
+
+      elH.textContent = pad(d.getHours());
+      elM.textContent = pad(d.getMinutes());
+      elS.textContent = pad(d.getSeconds());
+      elMs.textContent = pad(d.getMilliseconds(), 3);
+
+      requestAnimationFrame(tick);
+    }
+
+    setInterval(() => { baseDate = Date.now(); basePerf = performance.now(); }, 60_000);
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>
